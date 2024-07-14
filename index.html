@@ -1,0 +1,304 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LAPD Kennzeichen Prüfung</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to right, #004080, #1a1a1a); /* Verlauf von Dunkelblau zu Dunkelgrau */
+            color: #000; /* Schriftfarbe auf Schwarz ändern */
+            position: relative;
+        }
+
+        .search-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #6a7880; /* Dunkelgrau statt Weiß für das Eingabefeld */
+            padding: 40px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 400px;
+        }
+
+        .search-container label, .search-container button {
+            color: #000; /* Schriftfarbe auf Schwarz ändern */
+            font-weight: bold;
+        }
+
+        .search-container input[type="text"] {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            width: 100%;
+            background-color: #fff; /* Weißer Hintergrund für das Eingabefeld */
+            color: #000; /* Schriftfarbe auf Schwarz ändern */
+        }
+
+        .search-container button {
+            background-color: #004080;
+            border: none;
+            border-radius: 5px;
+            padding: 15px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+            color: #000; /* Schriftfarbe auf Schwarz ändern */
+        }
+
+        .search-container button:hover {
+            background-color: #00254d; /* Dunkleres Blau im Hover-Zustand */
+        }
+
+        .result-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .logo-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="logo-container">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Seal_of_the_Los_Angeles_Police_Department.png/220px-Seal_of_the_Los_Angeles_Police_Department.png" alt="LAPD Logo" width="220">
+</div>
+
+<div class="search-container">
+    <label for="licensePlate">Bitte gesuchtes Kennzeichen eingeben:</label>
+    <input type="text" id="licensePlate" placeholder="Nummernschild Eingeben" maxlength="8">
+    <button onclick="checkLicensePlate()">Suchen</button>
+
+    <div class="result-container" id="result"></div>
+</div>
+
+<script>
+    function checkLicensePlate() {
+        const licensePlateInput = document.getElementById("licensePlate");
+        const licensePlateValue = licensePlateInput.value;
+
+        // Überprüfen, ob das Nummernschild 8 Zeichen hat und nur Großbuchstaben und Zahlen enthält
+        const isValidLicensePlate = /^[A-Z0-9ÄÖÜ]{1,8}$/i.test(licensePlateValue);
+
+        if (isValidLicensePlate) {
+            // Array mit verschiedenen Ereignissen
+            const events = [
+"Fahrzeug entzog sich einer Verkehrskontrolle, Verdacht auf bewaffneten Fahrer. Fahndungslevel: 3",
+"Bewaffneter Überfall auf Tankstelle mit Flucht in gestohlenem Fahrzeug. Fahndungslevel: 4",
+"Schusswechsel zwischen Fahrzeuginsassen und Beamten, Verdächtige fliehen. Fahndungslevel: 5",
+"Flucht vor der Polizei nach bewaffnetem Banküberfall. Fahndungslevel: 4",
+"Fahrzeug verwickelt in Verfolgungsjagd nach versuchtem Beamtenmord. Fahndungslevel: 5",
+"Bewaffnete Verdächtige fliehen in gestohlenem Fahrzeug nach Schusswechsel. Fahndungslevel: 4",
+"Verdächtige fliehen vor der Polizei nach Schießerei in der Innenstadt. Fahndungslevel: 5",
+"Fahrzeug als gestohlen gemeldet, Verdächtiger auf der Flucht. Fahndungslevel: 3",
+"Überfall auf Juweliergeschäft, Verdächtige fliehen in gestohlenem Fahrzeug. Fahndungslevel: 4",
+"Gestohlenes Auto gesichtet, Verdächtige entkommen nach Verfolgungsjagd. Fahndungslevel: 3",
+"Fahrzeug bei bewaffnetem Banküberfall verwendet, Verdächtige auf der Flucht. Fahndungslevel: 4",
+"Gestohlenes Fahrzeug gesichtet, Verdächtige fliehen nach Einbruch. Fahndungslevel: 3",
+"Raubüberfall auf Geldtransporter, Verdächtige flüchten in gestohlenem Fahrzeug. Fahndungslevel: 4",
+"Fahrzeug als gestohlen gemeldet, Verdächtige entkommen nach Verfolgungsjagd. Fahndungslevel: 3",
+"Bewaffneter Überfall auf Tankstelle mit Flucht in gestohlenem Fahrzeug. Fahndungslevel: 4",
+"Gestohlenes Auto bei Schießerei mit Beamten, Verdächtige auf der Flucht. Fahndungslevel: 5",
+"Fahrzeug als gestohlen gemeldet, Verdächtige fliehen nach bewaffnetem Einbruch. Fahndungslevel: 4",
+"Raubüberfall auf Casino, Verdächtige fliehen in gestohlenem Fahrzeug. Fahndungslevel: 4",
+      "Fahrzeug passierte routinemäßige Kontrolle, keine Probleme. Fahndungslevel: 0",
+      "Das Auto wurde auf einem Supermarktparkplatz gesehen. Fahndungslevel: 1",
+      "Fahrzeug wurde bei einer Tankstelle gesichtet, kein Verdacht. Fahndungslevel: 0",
+      "Fahrzeug entdeckt auf einem Messegelände. Fahndungslevel: 2",
+      "Das Auto wurde bei einem Einkaufszentrum gesichtet. Fahndungslevel: 1",
+      "Routinemäßige Überprüfung durchgeführt, keine Auffälligkeiten. Fahndungslevel: 0",
+      "Fahrzeug wurde bei einer Tankstelle kontrolliert. Fahndungslevel: 3",
+      "Das Auto wurde legal geparkt in der Stadt. Fahndungslevel: 0",
+      "Fahrzeug entdeckt auf einem Messegelände. Fahndungslevel: 2",
+      "Das Auto wurde auf einem Supermarktparkplatz gesehen. Fahndungslevel: 1",
+      "Fahrzeug passierte routinemäßige Kontrolle, keine Verdachtsmomente. Fahndungslevel: 0",
+      "Fahrzeug wurde bei einer Tankstelle gesichtet, kein Verdacht. Fahndungslevel: 0",
+      "Das Auto wurde bei einem Einkaufszentrum gesichtet. Fahndungslevel: 1",
+      "Routineinspektion, keine Anzeichen für Probleme. Fahndungslevel: 0",
+      "Fahrzeug wurde bei einer Tankstelle kontrolliert. Fahndungslevel: 4",
+      "Das Auto wurde auf einem Supermarktparkplatz gesehen. Fahndungslevel: 1",
+      "Fahrzeug passierte routinemäßige Kontrolle, keine Probleme. Fahndungslevel: 0",
+      "Fahrzeug entdeckt auf einem Messegelände. Fahndungslevel: 2",
+      "Das Auto wurde bei einem Einkaufszentrum gesichtet. Fahndungslevel: 1",
+      "Fahrzeug wurde bei einer Tankstelle gesichtet, kein Verdacht. Fahndungslevel: 0",
+      "Fahrzeug wurde bei einer Tankstelle gestoppt. Fahndungslevel: 2",
+      "Das Auto wurde auf einem Supermarktparkplatz gesehen. Fahndungslevel: 1",
+      "Routineinspektion, keine Probleme festgestellt. Fahndungslevel: 0",
+      "Fahrzeug wurde bei einer Verkehrskontrolle gestoppt. Fahndungslevel: 2",
+      "Das Auto wurde bei einem Einkaufszentrum gesichtet. Fahndungslevel: 1",
+      "Fahrzeug entdeckt auf einem Messegelände. Fahndungslevel: 2",
+      "Fahrzeug wurde bei einer Tankstelle kontrolliert. Fahndungslevel: 2",
+      "Routinekontrolle, alles im grünen Bereich. Fahndungslevel: 0",
+      "Das Auto wurde auf einem Supermarktparkplatz gesichtet. Fahndungslevel: 1",
+      "Fahrzeug wurde bei einer Verkehrskontrolle gestoppt. Fahndungslevel: 2",
+      "Das Auto wurde bei einem Einkaufszentrum gesichtet. Fahndungslevel: 1",
+      "Fahrzeug entdeckt auf einem Messegelände. Fahndungslevel: 2",
+      "Routineinspektion, keine Probleme festgestellt. Fahndungslevel: 0",
+      "Fahrzeug wurde bei einer Tankstelle gesichtet. Fahndungslevel: 2",
+      "Das Auto wurde auf einem Supermarktparkplatz gesehen. Fahndungslevel: 1",
+      "Fahrzeug wurde bei einer Verkehrskontrolle gestoppt. Fahndungslevel: 2",
+      "Routinekontrolle, alles im grünen Bereich. Fahndungslevel: 0",
+      "Das Auto wurde auf einem Supermarktparkplatz gesehen. Fahndungslevel: 1",
+      "Fahrzeug passierte routinemäßige Kontrolle, keine Auffälligkeiten. Fahndungslevel: 0",
+      "Fahrzeug wurde bei einer Tankstelle kontrolliert. Fahndungslevel: 5",
+      "Das Auto wurde bei einem Einkaufszentrum gesichtet. Fahndungslevel: 1",
+      "Routineinspektion, keine Verdachtsmomente. Fahndungslevel: 0",
+      "Fahrzeug entdeckt auf einem Messegelände. Fahndungslevel: 2",
+      "Fahrzeug wurde bei einer Tankstelle gesichtet, kein Verdacht. Fahndungslevel: 0",
+      "Das Auto wurde auf einem Supermarktparkplatz gesehen. Fahndungslevel: 1",
+      "Routinekontrolle, alles im grünen Bereich. Fahndungslevel: 0",
+      "Fahrzeug passierte routinemäßige Kontrolle, keine Probleme. Fahndungslevel: 0",
+      "Fahrzeug wurde bei einer Tankstelle kontrolliert. Fahndungslevel: 3",
+      "Das Auto wurde bei einem Einkaufszentrum gesichtet. Fahndungslevel: 1",
+      "Routineinspektion, keine Anzeichen für Probleme. Fahndungslevel: 0",
+      "Fahrzeug entdeckt auf einem Messegelände. Fahndungslevel: 2",
+      "Fahrzeug wurde bei einer Tankstelle gesichtet, kein Verdacht. Fahndungslevel: 0",
+      "Das Auto wurde auf einem Supermarktparkplatz gesehen. Fahndungslevel: 1",
+      "Routinekontrolle, alles im grünen Bereich. Fahndungslevel: 0",
+"Gestohlenes Fahrzeug bei bewaffnetem Raubüberfall aufgeschlagen. Fahndungslevel: 4",
+"Fahrzeug als gestohlen gemeldet, Verdächtige entkommen nach Verfolgungsjagd. Fahndungslevel: 3",
+"Bewaffnete Verdächtige fliehen in gestohlenem Fahrzeug nach Angriff auf Geldtransport. Fahndungslevel: 4",
+"Gestohlenes Auto gesichtet, Verdächtige entkommen nach Überfall auf Juwelier. Fahndungslevel: 4",
+"Raubüberfall auf Bank mit Flucht in gestohlenem Fahrzeug. Fahndungslevel: 4",
+"Bewaffneter Angriff auf Polizeistation, Verdächtige flüchten. Fahndungslevel: 5",
+"Routinekontrolle, Fahrer kooperativ, keine Probleme. Fahndungslevel: 0",
+"Fahrzeug legal auf einem Supermarktparkplatz abgestellt. Fahndungslevel: 0",
+"Beamte helfen gestrandetem Fahrer mit Pannenhilfe. Fahndungslevel: 0",
+"Polizei eskortiert Fahrzeug für VIP-Transport. Fahndungslevel: 1",
+"Verkehrspatrouille, keine Verstöße festgestellt. Fahndungslevel: 0",
+"Fahrzeug auf legalen Autotreffen gesichtet. Fahndungslevel: 1",
+"Routinekontrolle, keine Beanstandungen. Fahndungslevel: 0",
+"Beamte unterstützen bei der Verkehrsführung nach Unfall. Fahndungslevel: 0",
+"Das Auto wurde auf einem Parkplatz am Strand gesehen. Fahndungslevel: 1",
+"Polizei begleitet Fahrzeugkolonne für sicheren Transport. Fahndungslevel: 1",
+"Fahrzeug legal vor einem Café abgestellt. Fahndungslevel: 0",
+"Routinepatrouille in Wohngebiet, keine Vorkommnisse. Fahndungslevel: 0",
+"Auto auf legaler Tuning-Veranstaltung gesichtet. Fahndungslevel: 1",
+"Polizei hilft gestrandetem Fahrer mit leerem Tank. Fahndungslevel: 0",
+"Fahrzeug entzog sich einer Verkehrskontrolle, Verdacht auf bewaffneten Fahrer. Fahndungslevel: 3",
+"Bewaffneter Überfall auf Tankstelle mit Flucht in gestohlenem Fahrzeug. Fahndungslevel: 4",
+"Schusswechsel zwischen Fahrzeuginsassen und Beamten, Verdächtige fliehen. Fahndungslevel: 5",
+"Flucht vor der Polizei nach bewaffnetem Banküberfall. Fahndungslevel: 4",
+"Fahrzeug als gestohlen gemeldet, Verdächtiger auf der Flucht. Fahndungslevel: 3",
+"Überfall auf Juweliergeschäft, Verdächtige fliehen in gestohlenem Fahrzeug. Fahndungslevel: 4",
+"Gestohlenes Auto gesichtet, Verdächtige entkommen nach Verfolgungsjagd. Fahndungslevel: 3",
+"Fahrzeug bei bewaffnetem Banküberfall verwendet, Verdächtige auf der Flucht. Fahndungslevel: 4",
+"Gestohlenes Fahrzeug gesichtet, Verdächtige fliehen nach Einbruch. Fahndungslevel: 3",
+"Raubüberfall auf Geldtransporter, Verdächtige flüchten in gestohlenem Fahrzeug. Fahndungslevel: 4",
+"Fahrzeug als gestohlen gemeldet, Verdächtige entkommen nach Verfolgungsjagd. Fahndungslevel: 3",
+"Bewaffneter Überfall auf Tankstelle mit Flucht in gestohlenem Fahrzeug. Fahndungslevel: 4",
+"Gestohlenes Auto bei Schießerei mit Beamten, Verdächtige auf der Flucht. Fahndungslevel: 5",
+"Fahrzeug als gestohlen gemeldet, Verdächtige fliehen nach bewaffnetem Einbruch. Fahndungslevel: 4",
+"Raubüberfall auf Casino, Verdächtige fliehen in gestohlenem Fahrzeug. Fahndungslevel: 4",
+"Gestohlenes Fahrzeug bei bewaffnetem Raubüberfall aufgeschlagen. Fahndungslevel: 4",
+"Fahrzeug als gestohlen gemeldet, Verdächtige entkommen nach Verfolgungsjagd. Fahndungslevel: 3",
+"Bewaffnete Verdächtige fliehen in gestohlenem Fahrzeug nach Angriff auf Geldtransport. Fahndungslevel: 4",
+"Gestohlenes Auto gesichtet, Verdächtige entkommen nach Überfall auf Juwelier. Fahndungslevel: 4",
+"Raubüberfall auf Bank mit Flucht in gestohlenem Fahrzeug. Fahndungslevel: 4",  
+    "Fahrzeug passierte routinemäßige Kontrolle, keine Probleme. Fahndungslevel: 0",
+      "Das Auto wurde auf einem Supermarktparkplatz gesehen. Fahndungslevel: 1",
+      "Fahrzeug wurde bei einer Tankstelle gesichtet, kein Verdacht. Fahndungslevel: 0",
+      "Fahrzeug entdeckt auf einem Messegelände. Fahndungslevel: 2",
+      "Das Auto wurde bei einem Einkaufszentrum gesichtet. Fahndungslevel: 1",
+      "Routinemäßige Überprüfung durchgeführt, keine Auffälligkeiten. Fahndungslevel: 0",
+      "Fahrzeug wurde bei einer Tankstelle kontrolliert. Fahndungslevel: 3",
+      "Das Auto wurde legal geparkt in der Stadt. Fahndungslevel: 0",
+      "Fahrzeug entdeckt auf einem Messegelände. Fahndungslevel: 2",
+      "Das Auto wurde auf einem Supermarktparkplatz gesehen. Fahndungslevel: 1",
+      "Fahrzeug passierte routinemäßige Kontrolle, keine Verdachtsmomente. Fahndungslevel: 0",
+      "Fahrzeug wurde bei einer Tankstelle gesichtet, kein Verdacht. Fahndungslevel: 0",
+      "Das Auto wurde bei einem Einkaufszentrum gesichtet. Fahndungslevel: 1",
+      "Routineinspektion, keine Anzeichen für Probleme. Fahndungslevel: 0",
+      "Fahrzeug wurde bei einer Tankstelle kontrolliert. Fahndungslevel: 4",
+      "Das Auto wurde auf einem Supermarktparkplatz gesehen. Fahndungslevel: 1",
+      "Fahrzeug passierte routinemäßige Kontrolle, keine Probleme. Fahndungslevel: 0",
+      "Fahrzeug entdeckt auf einem Messegelände. Fahndungslevel: 2",
+      "Das Auto wurde bei einem Einkaufszentrum gesichtet. Fahndungslevel: 1",
+      "Fahrzeug wurde bei einer Tankstelle gesichtet, kein Verdacht. Fahndungslevel: 0",
+      "Routinekontrolle, alles im grünen Bereich. Fahndungslevel: 0",
+      "Das Auto wurde auf einem Supermarktparkplatz gesehen. Fahndungslevel: 1",
+      "Fahrzeug passierte routinemäßige Kontrolle, keine Auffälligkeiten. Fahndungslevel: 0",
+      "Fahrzeug wurde bei einer Tankstelle kontrolliert. Fahndungslevel: 5",
+      "Das Auto wurde bei einem Einkaufszentrum gesichtet. Fahndungslevel: 1",
+      "Routineinspektion, keine Verdachtsmomente. Fahndungslevel: 0",
+      "Fahrzeug entdeckt auf einem Messegelände. Fahndungslevel: 2",
+      "Fahrzeug wurde bei einer Tankstelle gesichtet, kein Verdacht. Fahndungslevel: 0",
+      "Das Auto wurde auf einem Supermarktparkplatz gesehen. Fahndungslevel: 1",
+      "Routinekontrolle, alles im grünen Bereich. Fahndungslevel: 0",
+      "Fahrzeug passierte routinemäßige Kontrolle, keine Probleme. Fahndungslevel: 0",
+      "Fahrzeug wurde bei einer Tankstelle kontrolliert. Fahndungslevel: 3",
+      "Das Auto wurde bei einem Einkaufszentrum gesichtet. Fahndungslevel: 1",
+      "Routineinspektion, keine Anzeichen für Probleme. Fahndungslevel: 0",
+      "Fahrzeug entdeckt auf einem Messegelände. Fahndungslevel: 2",
+      "Fahrzeug wurde bei einer Tankstelle gesichtet, kein Verdacht. Fahndungslevel: 0",
+      "Das Auto wurde auf einem Supermarktparkplatz gesehen. Fahndungslevel: 1",
+      "Routinekontrolle, alles im grünen Bereich. Fahndungslevel: 0",
+"Fahrzeug verwickelt in Verfolgungsjagd nach versuchtem Beamtenmord. Fahndungslevel: 5",
+"Bewaffnete Verdächtige fliehen in gestohlenem Fahrzeug nach Schusswechsel. Fahndungslevel: 4",
+"Verdächtige fliehen vor der Polizei nach Schießerei in der Innenstadt. Fahndungslevel: 5",
+"Bewaffneter Angriff auf Polizeistation, Verdächtige flüchten. Fahndungslevel: 5",
+"Verfolgungsjagd nach bewaffnetem Raubüberfall auf Juweliergeschäft. Fahndungslevel: 4",
+"Beamte angegriffen während routinemäßiger Kontrolle, Verdächtige auf der Flucht. Fahndungslevel: 3",
+"Bewaffnete Verdächtige fliehen nach Überfall auf Geldtransport. Fahndungslevel: 4",
+"Fahrzeug flieht nach bewaffnetem Einbruch in Waffenladen. Fahndungslevel: 4",
+"Verdächtige entkommen nach bewaffnetem Raubüberfall auf Casino. Fahndungslevel: 4",
+"Beamte attackiert bei Verkehrskontrolle, Verdächtige auf der Flucht. Fahndungslevel: 3",
+"Bewaffnete Verdächtige fliehen in gestohlenem Fahrzeug nach Angriff auf Gefangenentransport. Fahndungslevel: 4",
+"Beamte unterstützen bei der Verkehrslenkung auf Großveranstaltung. Fahndungslevel: 1",
+"Fahrzeug wurde auf einem Aussichtspunkt entdeckt. Fahndungslevel: 1",
+"Routinekontrolle, keine Verdachtsmomente. Fahndungslevel: 0",
+"Auto legal auf einem öffentlichen Parkplatz geparkt. Fahndungslevel: 0",
+"Polizei hilft bei Absperrung für sicheres Straßenrennen. Fahndungslevel: 1",
+"Verkehrspatrouille, keine Verkehrsverstöße festgestellt. Fahndungslevel: 0",
+"Fahrzeug wurde auf einem Kultur-Event gesichtet. Fahndungslevel: 1",
+"Routinekontrolle, keine Beanstandungen. Fahndungslevel: 0",
+"Auto legal in einem Industriegebiet geparkt. Fahndungslevel: 0",
+"Polizei eskortiert Oldtimer-Parade. Fahndungslevel: 1",
+"Fahrzeug passierte Grenzkontrolle, alles in Ordnung. Fahndungslevel: 0",
+"Routineinspektion, keine Verdachtsmomente. Fahndungslevel: 0",
+"Das Auto wurde vor einem Kino gesichtet. Fahndungslevel: 1",
+"Fahrzeug legal auf einem Messegelände abgestellt. Fahndungslevel: 1",
+"Polizei unterstützt bei Verkehrssicherheitstraining. Fahndungslevel: 0",
+"Verfolgungsjagd nach bewaffnetem Raubüberfall auf Juweliergeschäft. Fahndungslevel: 4",
+"Beamte angegriffen während routinemäßiger Kontrolle, Verdächtige auf der Flucht. Fahndungslevel: 3",
+"Bewaffnete Verdächtige fliehen nach Überfall auf Geldtransport. Fahndungslevel: 4",
+"Fahrzeug flieht nach bewaffnetem Einbruch in Waffenladen. Fahndungslevel: 4",
+"Verdächtige entkommen nach bewaffnetem Raubüberfall auf Casino. Fahndungslevel: 4",
+"Beamte attackiert bei Verkehrskontrolle, Verdächtige auf der Flucht. Fahndungslevel: 3",
+"Bewaffnete Verdächtige fliehen in gestohlenem Fahrzeug nach Angriff auf Gefangenentransport. Fahndungslevel: 4",
+
+            ];
+
+            // Zufälliges Ereignis auswählen
+            const randomEvent = events[Math.floor(Math.random() * events.length)];
+
+            // Ergebnis anzeigen
+            document.getElementById("result").innerHTML = `<p>${randomEvent}</p>`;
+        } else {
+            // Fehlermeldung anzeigen
+            document.getElementById("result").innerHTML = "<p>Ungültiges Nummernschild. Bitte geben Sie 8 Zeichen ein.</p>";
+        }
+    }
+</script>
+
+</body>
+</html>
